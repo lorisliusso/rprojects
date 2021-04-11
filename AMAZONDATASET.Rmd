@@ -1,0 +1,61 @@
+---
+title: "Amazon Bestsellers"
+author: "LorisLiusso"
+date: "9/4/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+```{r}
+library(tidyr)
+library(dplyr)
+library(gganimate)
+library(ggplot2)
+library(gapminder)
+library(av)
+library(directlabels)
+library(forcats)
+library(stringr)
+library(data.table)
+
+```
+
+```{r}
+amazon_bests= read.csv("amazonbestsellers.csv")
+windowsFonts(Arial = windowsFont("Arial"))
+
+
+
+amazon_bests %>%
+  mutate(Name = str_replace_all (string=Name, pattern="Fifty Shades of Grey: Book One of the Fifty Shades Trilogy \\(Fifty Shades of Grey Series\\)", replacement="Fifty Shades of Grey: Book One"))%>%
+  filter(Reviews >35000)%>%
+   mutate(Name = fct_reorder(Name, Reviews)) %>%
+  setnames("Name", "Bookname") %>% #Put it here to avoid problems with functions
+  ggplot(aes(Bookname, Reviews, color=Bookname)) + 
+ scale_color_brewer(palette="Set3")+
+  geom_point(shape = 21, fill="gray", size = 3, stroke = 3)+
+ggtitle("Amazon Top 10 Bestselling Books 2009 - 2019 based on Reviews")+
+ theme(legend.position="right", text=element_text(family="Arial", face="bold", size=12), axis.text.x=element_blank(),
+        axis.ticks.x=element_blank())
+
+
+amazon_bests %>%
+  filter(Reviews >35000) %>%
+  mutate(Name = stringr::str_replace(Name, "Fifty Shades of Grey: Book One of the Fifty Shades Trilogy \\(Fifty Shades of Grey Series\\)", "Fifty Shades of Grey: Book One"))%>%
+   mutate(Name = fct_reorder(Name, User.Rating)) %>%
+  setnames("Name", "Bookname") %>% #Put it here to avoid problems with functions
+  ggplot(aes(Bookname, User.Rating, colour= Bookname)) +
+  scale_color_brewer(palette="Set3")+
+   geom_point(shape = 21, fill="gray", size = 3, stroke = 3)+
+ggtitle("Amazon Top 10 Bestselling Books 2009 - 2019 based on Rating")+
+ theme(legend.position="right", text=element_text(family="Arial", face="bold", size=12), axis.text.x=element_blank(),
+        axis.ticks.x=element_blank())
+ 
+```
+
+
